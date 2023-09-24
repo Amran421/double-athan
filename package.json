@@ -14,6 +14,7 @@
     "localhost": "servor src app.html 5173 --reload"
   },
   "devDependencies": {
+    "@bulatdashiev/svelte-slider": "^1.0.3",
     "@skeletonlabs/skeleton": "2.0.0",
     "@skeletonlabs/tw-plugin": "0.1.0",
     "@sveltejs/adapter-auto": "^2.0.0",

@@ -18,20 +18,21 @@
       "fs": {
         "all": false,
         "copyFile": false,
-        "createDir": false,
+        "createDir": true,
         "exists": false,
         "readDir": true,
-        "readFile": false,
+        "readFile": true,
         "removeDir": false,
         "removeFile": false,
         "renameFile": false,
         "scope": [
+          "$APPLOCALDATA/**",
           "$RESOURCE/**",
           "$RESOURCE/*",
           "$RESOURCE/",
           "$RESOURCE"
         ],
-        "writeFile": false
+        "writeFile": true
       },
       "http": {
         "all": true,

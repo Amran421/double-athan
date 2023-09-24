@@ -1,145 +1,149 @@
 <script>
 	// @ts-nocheck
 
-	import { fetch } from '@tauri-apps/api/http';
-	import { BaseDirectory, readDir } from '@tauri-apps/api/fs';
-	import { join, resolveResource, resourceDir } from '@tauri-apps/api/path';
+	import { onMount } from 'svelte';
 
-	import Athan1 from '../assets/sounds/Athan1.mp3';
-	import Athan2 from '../assets/sounds/Athan2.mp3';
-	import Athan3 from '../assets/sounds/Athan3.mp3';
-	import Athan4 from '../assets/sounds/Athan4.mp3';
-	import ShortAthan from '../assets/sounds/ShortAthan.mp3';
+	import { getAthanSounds, getTimes } from '$lib/apiFetcher';
+	import { playAthan, stopAthan, handleAthanSwitch } from '$lib/athanHandler';
+	import { loadData, saveData } from '$lib/persistentstore';
 
-	let AthanMap = {
-		'Athan1.mp3': Athan1,
-		'Athan2.mp3': Athan2,
-		'Athan3.mp3': Athan3,
-		'Athan4.mp3': Athan4,
-		'ShortAthan.mp3': ShortAthan
+	import { RangeSlider, ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
+
+	import { playIcon, stopIcon } from '$lib/assetExport';
+
+	let volumeSlider = 0;
+	let selectedAthan = 'Athan1.mp3';
+	$: options = {
+		LaunchOnStartup: true,
+		DarkMode: true,
+		StartMinimized: true
 	};
 
-	let ipNotGrabbed = false;
-	let errorMessage = 'Unable to get location. Please try restarting the app.';
+	let checkMarkImage = new Image();
+	checkMarkImage.src = 'https://www.svgrepo.com/show/169312/check-mark.svg';
 
-	var re = /[^0-9](?=[0-9])/g;
+	onMount(async () => {
+		updateOptions();
+	});
 
-	let selectedAthan = 'Athan1.mp3';
-	let athanAudio;
-
-	function handleAthanSwitch(name) {
-		if (name === selectedAthan) return;
-		selectedAthan = name;
+	async function optionUpdate(KeyName, NewValue) {
+		await saveData(KeyName, NewValue);
+		updateOptions();
 	}
 
-	function playAthan() {
-		if (!athanAudio) {
-			athanAudio = new Audio(AthanMap[selectedAthan]);
-		}
+	async function updateOptions() {
+		let data = await loadData();
 
-		athanAudio.volume = 1;
+		data.forEach((value, key) => {
+			console.log(key, value);
+			options[key] = value;
+		});
 
-		athanAudio.setAttribute('src', AthanMap[selectedAthan]);
-
-		if (athanAudio.duration > 0 && !athanAudio.paused) {
-			athanAudio.currentTime = 0;
-		}
-
-		athanAudio.play();
-	}
-
-	function stopAthan() {
-		// athanAudio = new Audio(AthanMap[selectedAthan]);
-		athanAudio.pause();
-		athanAudio.currentTime = 0;
-	}
-
-	async function getAthans() {
-		let resourcePath = await resourceDir();
-		let soundsPath = await join(resourcePath, '_up_', 'src', 'assets', 'sounds');
-		let red = await readDir(soundsPath, { recursive: true });
-
-		let athanNames = [];
-		let AthanSounds = [];
-
-		for (let i = 0; i < red.length; i++) {
-			athanNames.push(red[i].name);
-		}
-
-		return athanNames;
-	}
-
-	async function getIp() {
-		let ipGrabLink = 'https://api.ipify.org?format=json';
-
-		const response = fetch(ipGrabLink, { method: 'GET', timeout: 30 });
-
-		if (response == null) {
-			ipNotGrabbed = true;
-		}
-		return (await response).data.ip;
-	}
-
-	async function getTimes() {
-		let userIp = await getIp();
-		let prayerTimesLink = `https://www.islamicfinder.us/index.php/api/prayer_times?user_ip=${userIp}`;
-
-		const response = fetch(prayerTimesLink, { method: 'GET', timeout: 30 });
-		return (await response).data.results;
+		selectedAthan = data.get('SelectedAthan') || 'Athan1.mp3';
+		console.log(selectedAthan);
 	}
 </script>
 
-<body class="flex w-full h-full grid grid-col-2 gap-2 content-center justify-center">
-	<!-- Prayer Time Menu -->
-	<div class="card col-start-1 row-span-1">
-		<div class="pt-1 text-center text-xl font-bold decoration-1">Prayer Times</div>
-		{#await getTimes()}
-			<p>Loading Prayer Times...</p>
-		{:then prayerTimes}
-			<ul class="list m-4">
-				{#each Object.entries(prayerTimes) as [prayer, time]}
-					<li class="flex-auto justify-between">
-						<span class="text-left text-xl">{prayer}</span>
-						<div class="text-xl uppercase">{time.replaceAll('%', '')}</div>
-					</li>
-				{/each}
-			</ul>
-		{:catch error}
-			<p>Something went wrong: {error.message}</p>
-		{/await}
-	</div>
-	<!-- Athan Sound Menu -->
-	<div class="card col-start-2 row-span-1">
-		<div class="pt-1 text-center text-xl font-bold">Athans</div>
-		<!-- Sound Selection -->
-		<ul class="list m-4">
-			{#await getAthans()}
-				<p>Loading Sounds...</p>
-			{:then athanNames}
-				{#each athanNames as name}
-					<li class="justify-between">
-						<input
-							on:click={() => handleAthanSwitch(name)}
-							checked={name === selectedAthan ? true : false}
-							type="radio"
-						/>
-						<span class="text-lg"
-							>{name
-								?.replaceAll('.mp3', '')
-								.replace(re, '$& ')
-								.replace(/([A-Z])/g, ' $1')
-								.trim()}</span
-						>
-					</li>
-				{/each}
+<body>
+	<div class="flex mr-2 ml-2 h-full grid grid-col-3 gap-2 content-center justify-center">
+		<!-- Prayer Time Menu -->
+		<div class="card col-start-1 col-span-1">
+			<div class="pt-1 text-center text-xl font-bold decoration-1">Prayer Times</div>
+			{#await getTimes()}
+				<p>Loading Prayer Times...</p>
+			{:then prayerTimes}
+				<ul class="list m-3">
+					{#each Object.entries(prayerTimes) as [prayer, time]}
+						<li class="flex-auto justify-between">
+							<span class="text-left text-xl">{prayer}</span>
+							<div class="text-xl uppercase">{time.replaceAll('%', '')}</div>
+						</li>
+					{/each}
+				</ul>
+			{:catch error}
+				<p>Something went wrong: {error.message}</p>
 			{/await}
-			<!-- Sound Play Buttons -->
-			<li class="justify-center">
-				<div class="btn-group btn-group-sm variant-filled-primary h-7">
-					<button on:click={playAthan} class="btn-icon-md">Play</button>
-					<button on:click={stopAthan} class="btn-icon-md">Stop</button>
+		</div>
+		<!-- Athan Sound Menu -->
+		<div class="card col-start-2 row-span-1">
+			<div class="pt-1 text-center text-xl font-bold">Athans</div>
+			<!-- Sound Selection -->
+			<ul class="list mt-4 ml-2 mr-2">
+				{#await getAthanSounds()}
+					<p>Loading Sounds...</p>
+				{:then athanNames}
+					{#each athanNames as name}
+						<ListBox padding="px-2 pt-1">
+							<ListBoxItem
+								bind:group={selectedAthan}
+								on:click={() => handleAthanSwitch(name)}
+								name="medium"
+								value={name}
+								>{name
+									?.replaceAll('.mp3', '')
+									.replace(/[^0-9](?=[0-9])/g, '$& ')
+									.replace(/([A-Z])/g, ' $1')
+									.trim()}</ListBoxItem
+							>
+						</ListBox>
+					{/each}
+				{/await}
+				<!-- Sound Play Buttons -->
+				<li class="justify-center">
+					<div class="btn-group btn-group-sm variant-filled-primary h-7">
+						<button on:click={playAthan(selectedAthan)} class="btn-icon-md">
+							<img class="p-1.5" src={playIcon} alt="Play" />
+						</button>
+						<button on:click={stopAthan} class="btn-icon-md">
+							<img class="p-2" src={stopIcon} alt="Play" />
+						</button>
+					</div>
+				</li>
+			</ul>
+		</div>
+
+		<!-- Options Menu -->
+		<div class="card col-start-3 row-span-1">
+			<div class="pt-1 text-center text-xl font-bold">Options</div>
+			<!-- Sound Selection -->
+			<ul class="m-4">
+				{#each Object.entries(options) as [option]}
+					{#if option !== 'Volume' && option !== 'SelectedAthan'}
+						<div class="justify-center">
+							<li class="launchonstart justify-right">
+								<span
+									role="button"
+									tabindex="0"
+									on:click={() => {
+										optionUpdate(option, !options[option]);
+									}}
+									on:keypress
+									class="chip {options[option] ? 'variant-filled' : 'variant-soft'} text-md m-1"
+								>
+									{#if options[option] == true}
+										<img
+											src="https://www.svgrepo.com/show/169312/check-mark.svg"
+											alt="checkmark"
+											width="15"
+											height="15"
+											class="pr-2"
+										/>{/if}
+									{option.replace(/([A-Z])/g, ' $1').trim()}
+								</span>
+							</li>
+						</div>
+					{/if}
+				{/each}
+				<!-- Volume Slider -->
+				<div class="flex justify-evenly pt-7">
+					<span class="text-center font-bold"> Athan Volume </span>
 				</div>
-			</li>
-		</ul>
+				<li class="justify-center">
+					<div class="btn-group btn-group-sm variant-filled-primary p-1">
+						<RangeSlider name="slider" min="0" max="1" step="0.1" />
+					</div>
+				</li>
+			</ul>
+		</div>
 	</div>
 </body>

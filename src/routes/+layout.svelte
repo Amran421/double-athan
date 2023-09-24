@@ -6,7 +6,7 @@
 
 
 <!-- App Shell -->
-<AppShell>
+<AppShell >
 	<!-- Page Route Content -->
 	<slot />
 </AppShell>

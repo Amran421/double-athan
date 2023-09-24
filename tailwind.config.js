@@ -13,7 +13,7 @@ export default {
 			themes: {
 				preset: [
 					{
-						name: 'wintry',
+						name: 'hamlindigo',
 						enhancements: true,
 					},
 				],
