@@ -1,11 +1,11 @@
 // @ts-nocheck
 import { BaseDirectory, createDir, writeFile, readTextFile } from "@tauri-apps/api/fs";
-
+import { enable, disable } from "tauri-plugin-autostart-api"
 
 let options = new Map([
     ["LaunchOnStartup", true],
-    ["DarkMode", true],
     ["StartMinimized", true],
+    ["MinimizeOnClose", true],
     ["DarkMode", true],
     ["SelectedAthan", "Athan1.mp3"],
     ["Volume", 1]
@@ -60,8 +60,14 @@ export const loadData = async () => {
     return options
 }
 
-export const saveData = async (KeyName, newValue) => {   
+export const saveData = async (KeyName, newValue) => {
     options.set(KeyName, newValue)
+
+    if (KeyName == "LaunchOnStartup" && newValue == true) {
+        await enable();
+    } else if (KeyName == "LaunchOnStartup" && newValue == false) {
+        await disable();
+    }
 
     let contents = JSON.stringify(Array.from(options.entries()))
 
@@ -81,11 +87,11 @@ export const saveData = async (KeyName, newValue) => {
 }
 
 
-const updateData = async (data) => {
+const patchData = async (data) => {
     console.log(data)
-    if (data.size === 0 ) return
+    if (data.size === 0) return
 
-    options.forEach((value, key)=>{
+    options.forEach((value, key) => {
         console.log(key)
         if (!data.has(key)) {
             saveData(key, value)
@@ -96,4 +102,11 @@ createDataFolder()
 // check if json parse if empty and if yes then save for first time users
 
 const data = await loadData()
-// updateData(data)
+
+if (data.get("LaunchOnStartup") == true) {
+    await enable();
+} else {
+    await disable();
+}
+
+patchData(data)

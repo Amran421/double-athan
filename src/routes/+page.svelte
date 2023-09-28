@@ -11,20 +11,20 @@
 
 	import { playIcon, stopIcon } from '$lib/assetExport';
 
-	let volumeSlider = 0;
+	let volumeSlider = 1;
 	let selectedAthan = 'Athan1.mp3';
 	$: options = {
 		LaunchOnStartup: true,
-		DarkMode: true,
-		StartMinimized: true
+		MinimizeOnClose: true,
+		StartMinimized: true,
+		DarkMode: true
 	};
+
+	let currentDate = new Date();
+	$: athanTimes = {};
 
 	let checkMarkImage = new Image();
 	checkMarkImage.src = 'https://www.svgrepo.com/show/169312/check-mark.svg';
-
-	onMount(async () => {
-		updateOptions();
-	});
 
 	async function optionUpdate(KeyName, NewValue) {
 		await saveData(KeyName, NewValue);
@@ -40,8 +40,28 @@
 		});
 
 		selectedAthan = data.get('SelectedAthan') || 'Athan1.mp3';
+		volumeSlider = data.get('Volume') || 1;
 		console.log(selectedAthan);
 	}
+
+	async function refreshAthans() {
+		athanTimes = getTimes();
+		currentDate = new Date()
+		console.log('we up');
+	}
+
+	console.log(new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1)
+				.getTime() - new Date().getTime())
+
+	onMount(async () => {
+		updateOptions();
+		athanTimes = getTimes();
+		setTimeout(
+			refreshAthans,
+			new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1)
+				.getTime - new Date().getTime
+		);
+	});
 </script>
 
 <body>
@@ -140,7 +160,14 @@
 				</div>
 				<li class="justify-center">
 					<div class="btn-group btn-group-sm variant-filled-primary p-1">
-						<RangeSlider name="slider" min="0" max="1" step="0.1" />
+						<RangeSlider
+							on:change={optionUpdate('Volume', volumeSlider)}
+							bind:value={volumeSlider}
+							name="slider"
+							min="0"
+							max="1"
+							step="0.1"
+						/>
 					</div>
 				</li>
 			</ul>

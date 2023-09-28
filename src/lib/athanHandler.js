@@ -7,6 +7,8 @@ import ShortAthan from '../assets/sounds/ShortAthan.mp3';
 
 import { loadData, saveData } from './persistentstore';
 
+let athanRefereshed = true;
+
 let athanAudio;
 let AthanMap = {
     'Athan1.mp3': Athan1,
@@ -22,12 +24,14 @@ export function handleAthanSwitch(name) {
     saveData("SelectedAthan", name)
 }
 
-export function playAthan(name) {
+export async function playAthan(name) {
+    let data = await loadData()
+
     if (!athanAudio) {
         athanAudio = new Audio(AthanMap[name]);
     }
 
-    athanAudio.volume = 1;
+    athanAudio.volume = data.get("Volume") || 1;
 
     athanAudio.setAttribute('src', AthanMap[name]);
 
@@ -47,25 +51,37 @@ export function stopAthan() {
 export async function athanTime(athanTime) {
     let prayer = athanTime.split(" ")
     let time = prayer[0]
-    let timeSuffix = prayer[1].replaceAll("%").trim()
+    let timeSuffix = prayer[1].replaceAll("%", "").trim()
+
+    console.log(timeSuffix)
 
     let timeSplit = time.split(":")
-    let timeHours = timeSuffix == "am" ? Number(timeSplit[0]) : Number(timeSplit[0]) + 12
+    let timeHours = timeSuffix === "am" ? Number(timeSplit[0]) : Number(timeSplit[0]) + 12
     let timeSeconds = Number(timeSplit[1])
 
 
     let currentDate = new Date()
     let prayerTime = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), timeHours, timeSeconds)
-    console.log(prayerTime)
+    // console.log(prayerTime)
 
-    // if ((prayerTime.getTime() - currentDate.getTime()) < currentDate.getTime()) return
+    /* 
+     Create a global var named athanRefereshed
+     create timout set to go off at the start of next day
+     will update all athans and set refereshed var to true
+     check if true before setting timeout to prevent dupes 
+     [COMPLETED BUT NEEDS TESTING: +page.svelte:47]
+     */ 
 
     let data = await loadData()
     let soundName = data.get("SelectedAthan")
 
     if ((prayerTime.getTime() - currentDate.getTime()) < 0) return
 
-    console.log(prayerTime.getTime() - currentDate.getTime())
+    // console.log(prayerTime.getTime() - currentDate.getTime())
     setTimeout(playAthan, prayerTime.getTime() - currentDate.getTime(), soundName)
-    console.log("Timeout Set")
+
+    if (!athanRefereshed) {
+        setTimeout()
+    }
+
 }
