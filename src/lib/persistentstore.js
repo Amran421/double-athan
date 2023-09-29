@@ -6,7 +6,6 @@ let options = new Map([
     ["LaunchOnStartup", true],
     ["StartMinimized", true],
     ["MinimizeOnClose", true],
-    ["DarkMode", true],
     ["SelectedAthan", "Athan1.mp3"],
     ["Volume", 1]
 ])

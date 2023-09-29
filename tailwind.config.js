@@ -1,3 +1,5 @@
+import { myCustomTheme } from './custom-theme';
+
 import { join } from 'path'
 
 import { skeleton } from '@skeletonlabs/tw-plugin'
@@ -11,12 +13,9 @@ export default {
 	plugins: [
 		skeleton({
 			themes: {
-				preset: [
-					{
-						name: 'hamlindigo',
-						enhancements: true,
-					},
-				],
+				custom: [
+					myCustomTheme
+				]
 			},
 		}),
 	],

@@ -7,8 +7,8 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "athan-app",
-    "version": "0.1.0"
+    "productName": "double-athan",
+    "version": "1.0.0"
   },
   "tauri": {
     "systemTray": {
@@ -56,14 +56,15 @@
       },
       "externalBin": [],
       "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
+        "icons/kaaba-32.png",
+        "icons/kaaba-64.png",
+        "icons/kaaba-128.png",
+        "icons/kaaba-256.png",
+        "icons/kaaba.icns",
+        "icons/kaaba.ico"
       ],
-      "identifier": "com.tauri.dev",
-      "longDescription": "",
+      "identifier": "com.mantadev.dathan",
+      "longDescription": "Desktop app for athan. Built with tauri, svelte, and skeleton ui.",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",

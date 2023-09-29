@@ -70,7 +70,7 @@ export async function athanTime(athanTime) {
      will update all athans and set refereshed var to true
      check if true before setting timeout to prevent dupes 
      [COMPLETED BUT NEEDS TESTING: +page.svelte:47]
-     */ 
+     */
 
     let data = await loadData()
     let soundName = data.get("SelectedAthan")

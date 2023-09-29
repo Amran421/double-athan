@@ -102,8 +102,6 @@ fn fetch_data(
     )
     .expect("failed to resolve path");
 
-    // swap file::open to file:create and create file if one not found using og_data string
-
     match File::open(&path) {
         Ok(mut f) => {
             // let &f = file.clone();

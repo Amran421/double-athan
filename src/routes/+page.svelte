@@ -16,8 +16,7 @@
 	$: options = {
 		LaunchOnStartup: true,
 		MinimizeOnClose: true,
-		StartMinimized: true,
-		DarkMode: true
+		StartMinimized: true
 	};
 
 	let currentDate = new Date();
@@ -46,12 +45,17 @@
 
 	async function refreshAthans() {
 		athanTimes = getTimes();
-		currentDate = new Date()
+		currentDate = new Date();
 		console.log('we up');
 	}
 
-	console.log(new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1)
-				.getTime() - new Date().getTime())
+	console.log(
+		new Date(
+			currentDate.getFullYear(),
+			currentDate.getMonth(),
+			currentDate.getDate() + 1
+		).getTime() - new Date().getTime()
+	);
 
 	onMount(async () => {
 		updateOptions();
@@ -98,6 +102,7 @@
 								bind:group={selectedAthan}
 								on:click={() => handleAthanSwitch(name)}
 								name="medium"
+								active="variant-filled-tertiary"
 								value={name}
 								>{name
 									?.replaceAll('.mp3', '')
@@ -138,7 +143,9 @@
 										optionUpdate(option, !options[option]);
 									}}
 									on:keypress
-									class="chip {options[option] ? 'variant-filled' : 'variant-soft'} text-md m-1"
+									class="chip {options[option]
+										? 'variant-filled-tertiary'
+										: 'variant-soft'} text-md m-1"
 								>
 									{#if options[option] == true}
 										<img
