@@ -2,4 +2,4 @@
 
 Desktop athan app built with Tauri, Svelte, and Skeleton UI.
 
-<a href="https://www.freepik.com/icon/kaaba_8055280#fromView=search&term=kaaba&page=1&position=35&track=ais&track=ais">Icon by Freepik</a>
+<a href="https://www.flaticon.com/free-icons/kaaba" title="kaaba icons">Kaaba icons created by Freepik - Flaticon</a>
