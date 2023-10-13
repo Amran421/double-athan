@@ -39,6 +39,8 @@
   "type": "module",
   "dependencies": {
     "@tauri-apps/api": "^1.4.0",
+    "adhan": "^4.4.3",
+    "moment": "^2.29.4",
     "servor": "^4.0.2",
     "tauri-plugin-autostart-api": "github:tauri-apps/tauri-plugin-autostart#v1"
   }

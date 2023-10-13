@@ -6,6 +6,7 @@ let options = new Map([
     ["LaunchOnStartup", true],
     ["StartMinimized", true],
     ["MinimizeOnClose", true],
+    ["MinimizeToTray", true],
     ["SelectedAthan", "Athan1.mp3"],
     ["Volume", 1]
 ])
@@ -17,7 +18,7 @@ const createDataFolder = async () => {
             recursive: true,
         });
     } catch (e) {
-        console.error(e);
+        // console.error(e);
     }
 };
 
@@ -48,10 +49,9 @@ export const loadData = async () => {
             },
         );
     } catch (e) {
+        console.log(e);
         createDataFile()
         return await loadData()
-
-        console.log(e);
     }
 
     options = new Map(JSON.parse(data))
@@ -100,12 +100,15 @@ const patchData = async (data) => {
 createDataFolder()
 // check if json parse if empty and if yes then save for first time users
 
-const data = await loadData()
+document.onreadystatechange = async () => {
+    if (document.readyState === 'complete') return
+    
+    const data = await loadData()
+    if (data.get("LaunchOnStartup") == true) {
+        await enable();
+    } else {
+        await disable();
+    }
 
-if (data.get("LaunchOnStartup") == true) {
-    await enable();
-} else {
-    await disable();
-}
-
-patchData(data)
+    patchData(data)
+};

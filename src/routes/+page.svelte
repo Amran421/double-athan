@@ -11,16 +11,23 @@
 
 	import { playIcon, stopIcon } from '$lib/assetExport';
 
+	import bismillah from '../assets/sounds/bismillah.mp3'
+
+	import moment from 'moment';
+
 	let volumeSlider = 1;
 	let selectedAthan = 'Athan1.mp3';
 	$: options = {
 		LaunchOnStartup: true,
+		MinimizeToTray: true,
 		MinimizeOnClose: true,
 		StartMinimized: true
 	};
 
+	let athanList = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+
 	let currentDate = new Date();
-	$: athanTimes = {};
+	let athanTimes = {};
 
 	let checkMarkImage = new Image();
 	checkMarkImage.src = 'https://www.svgrepo.com/show/169312/check-mark.svg';
@@ -43,8 +50,13 @@
 		console.log(selectedAthan);
 	}
 
-	async function refreshAthans() {
-		athanTimes = getTimes();
+	async function updateTimes() {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition((position) => {
+				console.log(position)
+				athanTimes = getTimes(position.coords);
+			});
+		}
 		currentDate = new Date();
 		console.log('we up');
 	}
@@ -57,11 +69,14 @@
 		).getTime() - new Date().getTime()
 	);
 
-	onMount(async () => {
+	onMount(() => {
 		updateOptions();
-		athanTimes = getTimes();
+		updateTimes();
+
+		new Audio(bismillah).play()
+
 		setTimeout(
-			refreshAthans,
+			updateTimes,
 			new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1)
 				.getTime - new Date().getTime
 		);
@@ -73,20 +88,14 @@
 		<!-- Prayer Time Menu -->
 		<div class="card col-start-1 col-span-1">
 			<div class="pt-1 text-center text-xl font-bold decoration-1">Prayer Times</div>
-			{#await getTimes()}
-				<p>Loading Prayer Times...</p>
-			{:then prayerTimes}
-				<ul class="list m-3">
-					{#each Object.entries(prayerTimes) as [prayer, time]}
-						<li class="flex-auto justify-between">
-							<span class="text-left text-xl">{prayer}</span>
-							<div class="text-xl uppercase">{time.replaceAll('%', '')}</div>
-						</li>
-					{/each}
-				</ul>
-			{:catch error}
-				<p>Something went wrong: {error.message}</p>
-			{/await}
+			<ul class="list m-3">
+				{#each Object.entries(athanList) as [index, prayer]}
+					<li class="flex-auto justify-between">
+						<span class="text-left text-xl">{prayer.charAt(0).toUpperCase() + prayer.slice(1)}</span>
+						<div class="text-xl uppercase">{moment(athanTimes[prayer]).format("HH:MM")}</div>
+					</li>
+				{/each}
+			</ul>
 		</div>
 		<!-- Athan Sound Menu -->
 		<div class="card col-start-2 row-span-1">
@@ -162,7 +171,7 @@
 					{/if}
 				{/each}
 				<!-- Volume Slider -->
-				<div class="flex justify-evenly pt-7">
+				<div class="flex justify-evenly pt-2">
 					<span class="text-center font-bold"> Athan Volume </span>
 				</div>
 				<li class="justify-center">

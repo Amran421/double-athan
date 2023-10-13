@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "double-athan",
+    "productName": "Double A-than",
     "version": "1.0.0"
   },
   "tauri": {
@@ -49,19 +49,18 @@
     },
     "bundle": {
       "active": true,
-      "category": "DeveloperTool",
+      "category": "Utility",
       "copyright": "",
       "deb": {
         "depends": []
       },
       "externalBin": [],
       "icon": [
-        "icons/kaaba-32.png",
-        "icons/kaaba-64.png",
-        "icons/kaaba-128.png",
-        "icons/kaaba-256.png",
-        "icons/kaaba.icns",
-        "icons/kaaba.ico"
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
       ],
       "identifier": "com.mantadev.dathan",
       "longDescription": "Desktop app for athan. Built with tauri, svelte, and skeleton ui.",
