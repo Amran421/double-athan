@@ -16,6 +16,14 @@
       "iconAsTemplate": true
     },
     "allowlist": {
+      "dialog": {
+        "all": false,
+        "ask": false,
+        "confirm": false,
+        "message": true,
+        "open": false,
+        "save": false
+      },
       "path": {
         "all": true
       },

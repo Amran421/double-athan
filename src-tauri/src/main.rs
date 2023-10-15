@@ -4,14 +4,20 @@
 use std::io::Read;
 use std::path::PathBuf;
 use std::{convert::*, fs, fs::File};
-use tauri::utils::assets::EmbeddedAssets;
-use tauri::{CloseRequestApi, Context, Env, GlobalWindowEvent, Manager, SystemTrayMenuItemHandle, RunEvent};
 
 use tauri::api::path::BaseDirectory;
+
+use tauri::utils::assets::EmbeddedAssets;
+use tauri::{
+    CloseRequestApi, Context, Env, GlobalWindowEvent, Manager, RunEvent, SystemTrayMenuItemHandle,
+};
 
 use tauri::AppHandle;
 use tauri::SystemTray;
 use tauri::{CustomMenuItem, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem};
+
+use native_dialog::{MessageDialog, MessageType};
+use sysinfo::{System, SystemExt};
 
 use tauri_plugin_autostart::MacosLauncher;
 
@@ -39,21 +45,27 @@ fn main() {
             _ => {}
         })
         .on_window_event(move |event| match event.event() {
-            tauri::WindowEvent::CloseRequested { api, .. } => 
-                handle_minimize_close(api, &event),
-            tauri::WindowEvent::Moved(_) => 
-                handle_minimize_tray(event),
+            tauri::WindowEvent::CloseRequested { api, .. } => handle_minimize_close(api, &event),
+            tauri::WindowEvent::Moved(_) => handle_minimize_tray(event),
             _ => {}
         })
         .setup(|app| {
+            // let window = app.get_window("main").unwrap();
+            if is_app_open() {
+                MessageDialog::new()
+                    .set_type(MessageType::Error)
+                    .set_title("Error")
+                    .set_text("Application is already running!")
+                    .show_alert()
+                    .unwrap();
+                app.app_handle().exit(0);
+            }
             handle_start_minimized(app);
             Ok(())
         })
         .build(context)
         .expect("error while running tauri application")
-        .run(|_app_handle, event| 
-            handle_backend_tray(event)
-        )
+        .run(|_app_handle, event| handle_backend_tray(event))
 }
 
 
@@ -226,4 +238,11 @@ fn open_data_file(json_path: &PathBuf, og_data: String, key_index: usize) -> ser
             serde_json::Value::Bool(false)
         }
     }
+}
+
+fn is_app_open() -> bool {
+    let s = System::new_all();
+    let count = s.processes_by_name("Double A-than").count();
+    println!("{}", count);
+    count > 1
 }

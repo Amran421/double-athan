@@ -2,6 +2,7 @@
 import { BaseDirectory, createDir, writeFile, readTextFile } from "@tauri-apps/api/fs";
 import { enable, disable } from "tauri-plugin-autostart-api"
 
+
 let options = new Map([
     ["LaunchOnStartup", true],
     ["StartMinimized", true],

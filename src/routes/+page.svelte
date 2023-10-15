@@ -83,7 +83,7 @@
 		setTimeout(
 			updateTimes,
 			new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1)
-				.getTime - new Date().getTime
+				.getTime() - new Date().getTime()
 		);
 	});
 </script>
