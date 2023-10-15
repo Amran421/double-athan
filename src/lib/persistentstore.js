@@ -7,6 +7,7 @@ let options = new Map([
     ["StartMinimized", true],
     ["MinimizeOnClose", true],
     ["MinimizeToTray", true],
+    ["24HourFormat", true],
     ["SelectedAthan", "Athan1.mp3"],
     ["Volume", 1]
 ])

@@ -21,6 +21,7 @@ export async function getAthanSounds() {
     let AthanSounds = [];
 
     for (let i = 0; i < red.length; i++) {
+        if (!red[i].name.match("Athan")) continue;
         athanNames.push(red[i].name);
     }
 

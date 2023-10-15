@@ -31,6 +31,9 @@
         "renameFile": false,
         "scope": [
           "$APPLOCALDATA/**",
+          "$APPLOCALDATA/*",
+          "$APPLOCALDATA/",
+          "$APPLOCALDATA",
           "$RESOURCE/**",
           "$RESOURCE/*",
           "$RESOURCE/",

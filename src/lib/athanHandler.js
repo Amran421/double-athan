@@ -80,8 +80,7 @@ export async function athanTime(athanTime) {
     // console.log(prayerTime.getTime() - currentDate.getTime())
     setTimeout(playAthan, prayerTime.getTime() - currentDate.getTime(), soundName)
 
-    if (!athanRefereshed) {
-        setTimeout()
-    }
-
+    // if (!athanRefereshed) {
+    //     setTimeout()
+    // }
 }

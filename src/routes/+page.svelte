@@ -11,17 +11,19 @@
 
 	import { playIcon, stopIcon } from '$lib/assetExport';
 
-	import bismillah from '../assets/sounds/bismillah.mp3'
+	import bismillah from '../assets/sounds/bismillah.mp3';
 
 	import moment from 'moment';
+	import { get } from 'svelte/store';
 
-	let volumeSlider = 1;
+	let volumeSlider = 0;
 	let selectedAthan = 'Athan1.mp3';
 	$: options = {
 		LaunchOnStartup: true,
 		MinimizeToTray: true,
 		MinimizeOnClose: true,
-		StartMinimized: true
+		StartMinimized: true,
+		'24HourFormat': true
 	};
 
 	let athanList = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
@@ -33,6 +35,7 @@
 	checkMarkImage.src = 'https://www.svgrepo.com/show/169312/check-mark.svg';
 
 	async function optionUpdate(KeyName, NewValue) {
+		console.log(`new value: ${NewValue}`)
 		await saveData(KeyName, NewValue);
 		updateOptions();
 	}
@@ -46,14 +49,14 @@
 		});
 
 		selectedAthan = data.get('SelectedAthan') || 'Athan1.mp3';
-		volumeSlider = data.get('Volume') || 1;
+		volumeSlider = data.get('Volume') != null ? data.get('Volume') : 1;
 		console.log(selectedAthan);
 	}
 
 	async function updateTimes() {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition((position) => {
-				console.log(position)
+				console.log(position);
 				athanTimes = getTimes(position.coords);
 			});
 		}
@@ -69,11 +72,13 @@
 		).getTime() - new Date().getTime()
 	);
 
-	onMount(() => {
-		updateOptions();
-		updateTimes();
+	onMount(async () => {
+		await updateOptions();
+		await updateTimes();
 
-		new Audio(bismillah).play()
+		let startupAudio = new Audio(bismillah);
+		startupAudio.volume = volumeSlider;
+		startupAudio.play();
 
 		setTimeout(
 			updateTimes,
@@ -84,15 +89,20 @@
 </script>
 
 <body>
-	<div class="flex mr-2 ml-2 h-full grid grid-col-3 gap-2 content-center justify-center">
+	<div class="flex ml-2 mr-2 h-full grid grid-col-3 gap-2 content-center justify-center">
 		<!-- Prayer Time Menu -->
 		<div class="card col-start-1 col-span-1">
 			<div class="pt-1 text-center text-xl font-bold decoration-1">Prayer Times</div>
 			<ul class="list m-3">
 				{#each Object.entries(athanList) as [index, prayer]}
 					<li class="flex-auto justify-between">
-						<span class="text-left text-xl">{prayer.charAt(0).toUpperCase() + prayer.slice(1)}</span>
-						<div class="text-xl uppercase">{moment(athanTimes[prayer]).format("HH:MM")}</div>
+						<span class="text-left text-xl">{prayer.charAt(0).toUpperCase() + prayer.slice(1)}</span
+						>
+						<div class="text-xl uppercase">
+							{moment(athanTimes[prayer]).format(
+								options['24HourFormat'] == true ? 'HH:mm' : 'hh:mm A'
+							)}
+						</div>
 					</li>
 				{/each}
 			</ul>
@@ -124,7 +134,7 @@
 				{/await}
 				<!-- Sound Play Buttons -->
 				<li class="justify-center">
-					<div class="btn-group btn-group-sm variant-filled-primary h-7">
+					<div class="btn-group btn-group-sm variant-filled-primary h-6">
 						<button on:click={playAthan(selectedAthan)} class="btn-icon-md">
 							<img class="p-1.5" src={playIcon} alt="Play" />
 						</button>
@@ -138,9 +148,9 @@
 
 		<!-- Options Menu -->
 		<div class="card col-start-3 row-span-1">
-			<div class="pt-1 text-center text-xl font-bold">Options</div>
-			<!-- Sound Selection -->
-			<ul class="m-4">
+			<div class="text-center text-xl font-bold">Options</div>
+			<!-- Option Selection -->
+			<ul class="ml-1 mr-1 mb-1 pt-4">
 				{#each Object.entries(options) as [option]}
 					{#if option !== 'Volume' && option !== 'SelectedAthan'}
 						<div class="justify-center">
@@ -172,9 +182,9 @@
 				{/each}
 				<!-- Volume Slider -->
 				<div class="flex justify-evenly pt-2">
-					<span class="text-center font-bold"> Athan Volume </span>
+					<span class="text-center font-bold"> Volume </span>
 				</div>
-				<li class="justify-center">
+				<li class="flex justify-evenly">
 					<div class="btn-group btn-group-sm variant-filled-primary p-1">
 						<RangeSlider
 							on:change={optionUpdate('Volume', volumeSlider)}
