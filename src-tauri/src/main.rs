@@ -50,7 +50,8 @@ fn main() {
             _ => {}
         })
         .setup(|app| {
-            // let window = app.get_window("main").unwrap();
+            // let window = app.windows().get("main").unwrap();
+
             if is_app_open() {
                 MessageDialog::new()
                     .set_type(MessageType::Error)
@@ -200,7 +201,8 @@ fn fetch_data(context: &Context<EmbeddedAssets>, key_index: usize) -> serde_json
         ["MinimizeToTray", true],
         ["24HourFormat", true],
         ["SelectedAthan", "Athan1.mp3"],
-        ["Volume", 1]
+        ["Volume", 1],
+        ["CalcMethod", "NorthAmerica"]
     ]"#
     .to_string();
 

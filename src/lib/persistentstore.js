@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { BaseDirectory, createDir, writeFile, readTextFile } from "@tauri-apps/api/fs";
 import { enable, disable } from "tauri-plugin-autostart-api"
+import { appWindow } from "@tauri-apps/api/window"
 
 
 let options = new Map([
@@ -10,7 +11,8 @@ let options = new Map([
     ["MinimizeToTray", true],
     ["24HourFormat", true],
     ["SelectedAthan", "Athan1.mp3"],
-    ["Volume", 1]
+    ["Volume", 1],
+    ["CalcMethod", "NorthAmerica"]
 ])
 
 const createDataFolder = async () => {

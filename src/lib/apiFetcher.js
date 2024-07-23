@@ -11,6 +11,7 @@ import {
     Prayer,
     Qibla,
 } from 'adhan'
+import { loadData } from './persistentstore';
 
 let athanList = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
@@ -30,15 +31,17 @@ export async function getAthanSounds() {
     return athanNames;
 }
 
-export function getTimes(coords) {
+export async function getTimes(coords) {
+    let data = await loadData();
+    console.log(data.get("CalcMethod"))
     console.log(coords)
     const coordinates = new Coordinates(coords.latitude, coords.longitude);
-    const params = CalculationMethod.NorthAmerica();
+    const params = CalculationMethod[data.get("CalcMethod")]();
     const date = new Date();
     const prayerTimes = new PrayerTimes(coordinates, date, params);
 
     for (let i = 0; i < athanList.length; i++) {
-        // console.log(prayerTimes[athanList[i]])
+        console.log(prayerTimes[athanList[i]])
         athanTime(prayerTimes[athanList[i]]);
     }
 

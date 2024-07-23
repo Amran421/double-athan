@@ -29,6 +29,8 @@ export async function playAthan(name) {
     if (!athanAudio) {
         athanAudio = new Audio(AthanMap[name]);
     }
+    console.log(data.get("Volume"))
+    if (data.get("Volume") == 0) return;
 
     athanAudio.volume = data.get("Volume") || 1;
 
@@ -58,3 +60,11 @@ export async function athanTime(athanTime) {
     // console.log(prayerTime.getTime() - currentDate.getTime())
     setTimeout(playAthan, athanTime.getTime() - currentDate.getTime(), soundName)
 }
+
+export function updateAthanVolume(volume) {
+    if (!athanAudio) {
+        athanAudio = new Audio(AthanMap[name]);
+    }
+    console.log(volume);
+    athanAudio.volume = volume;
+} 

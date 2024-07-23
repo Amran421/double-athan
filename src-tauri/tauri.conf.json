@@ -8,17 +8,21 @@
   },
   "package": {
     "productName": "Double A-than",
-    "version": "1.1.1"
+    "version": "2.0.0"
   },
   "tauri": {
+    "macOSPrivateApi": true,
     "systemTray": {
       "iconPath": "icons/icon.png",
       "iconAsTemplate": true
     },
     "allowlist": {
+      "window": {
+        "all": true
+      },
       "dialog": {
         "all": false,
-        "ask": false,
+        "ask": true,
         "confirm": false,
         "message": true,
         "open": false,
@@ -98,15 +102,22 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "windows": {
+        "installMode": "basicUi",
+        "installerArgs": []
+      },
+      "active": true,
+      "endpoints": ["https://gist.githubusercontent.com/Amran421/6a693d8721ce44a49cd44875986ee7c9/raw/"],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc0RDBFNEEzREJDMDAyMTIKUldRU0FzRGJvK1RRZEp0QlBrZjI3cXZrR09CcG1HSnhYeURWR2ZwTG9PNHdpQnVNMHFVeWVYanAK"
     },
     "windows": [
       {
+        "decorations": true,
         "fullscreen": false,
-        "height": 300,
+        "height": 405,
         "resizable": false,
-        "title": "Double A-than",
-        "width": 560
+        "width": 700
       }
     ]
   }

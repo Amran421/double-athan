@@ -1,22 +1,24 @@
-import { myCustomTheme } from './custom-theme';
-
 import { join } from 'path'
 
-import { skeleton } from '@skeletonlabs/tw-plugin'
+import daisyui from "daisyui";
+
 /** @type {import('tailwindcss').Config} */
 export default {
 	darkMode: 'class',
-	content: ['./src/**/*.{html,js,svelte,ts}', join(require.resolve('@skeletonlabs/skeleton'), '../**/*.{html,js,svelte,ts}')],
+	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
-		extend: {},
+		extend: {
+			gridTemplateColumns: {
+				// Simple 16 column grid
+				'3': 'repeat(autofit, minmax(300px, 1fr))',
+
+				// Complex site-specific column configuration
+				'footer': '200px minmax(900px, 1fr) 100px',
+			}
+		},
 	},
 	plugins: [
-		skeleton({
-			themes: {
-				custom: [
-					myCustomTheme
-				]
-			},
-		}),
+		daisyui,
 	],
+	daisyui: { themes: true }
 };
